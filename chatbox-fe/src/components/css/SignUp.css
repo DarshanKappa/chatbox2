@@ -1,0 +1,72 @@
+.text-input {
+}
+
+.SignUp{
+    background: #adff2f21;
+    display: flex;
+    justify-content: center;
+    height: 100vh;
+}
+
+.inner-Signup{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.main-signin{
+    background: #adff2f21;
+    /* height: 90vh; */
+    display: inline-block;
+    padding: 10vh 5vw 25vh 5vw;
+    box-shadow: 0px 0px 16px -6px grey;
+}
+
+.SignUp>div>input[type="text"], .SignUp>div>input[type="password"] {
+    padding: 10px 5px;
+    width: 40vw;
+    margin: 0.7vw 0;
+}
+
+.main-signin>div>input[type="text"], .main-signin>div>input[type="password"] {
+    padding: 10px 5px;
+    width: 310px;
+    margin: 7px 0;
+    border: 1px solid #959595;
+    border-radius: 5px;
+}
+
+.SignUp>input[type="button"] {
+    color: #141414;
+    background: #eb9800;
+    width: 150px;
+    border: none;
+    box-shadow: 0px 0px -2px 16px white;
+    box-shadow: 0px 0px 20px -5px #a3a3a3;
+    border-radius: 5px;
+    height: 35px;
+    font-size: 16px;
+
+}
+
+.main-signin>input[type="button"] {
+    color: #141414;
+    background: #eb9800;
+    width: 150px;
+    border: none;
+    box-shadow: 0px 0px -2px 16px white;
+    box-shadow: 0px 0px 20px -5px #a3a3a3;
+    border-radius: 5px;
+    height: 35px;
+    font-size: 16px;
+
+}
+
+#temp1{
+    border: none;
+    width: 47px;
+    height: 1px;
+    background: transparent;
+    outline: none;
+    color: transparent;
+}

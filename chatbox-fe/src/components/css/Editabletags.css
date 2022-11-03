@@ -1,0 +1,9 @@
+.editable-tag{
+    padding: 0.75vw 2%;
+    width: 86%;
+    border: 1px solid gray;
+    border-radius: 0.5vw;
+    text-align: left;
+    outline: none;
+    color: #222222;   
+}

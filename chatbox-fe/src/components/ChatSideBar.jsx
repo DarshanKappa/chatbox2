@@ -53,7 +53,7 @@ function Friend(props){
     const clickHandler = ()=>{
         props.setOppositeUser({id: props.friend.friend.id, name: props.friend.friend.username})
         console.log('---------clicked---------', props.friend)
-        navigate(`/search`)
+        navigate(`/chat/${props.friend.friend.id}/${props.friend.friend.username}`)
     }
     return (
         <div onClick={clickHandler} className="friend-box">

@@ -22,7 +22,9 @@ class SendMessage extends Component {
             scrollHeight: null,
             number: 0,
             box_height: null,
-            real_box_height: null
+            real_box_height: null,
+            border: '1px solid gray',
+            droped: false
         }
         this.refer = React.createRef()
         this.input_ref = React.createRef()
@@ -31,6 +33,11 @@ class SendMessage extends Component {
         this.send_message = this.send_message.bind(this)
         this.refresh_chat = this.props.refresh_chat.bind(this)
         this.componentDidMount = this.componentDidMount.bind(this)
+
+        this.dragenterhandler = this.dragenterhandler.bind(this)
+        this.draghandler = this.draghandler.bind(this)
+
+        this.sendMessage = this.props.sendMessage.bind(this)
     }
 
     componentDidMount(){
@@ -61,8 +68,8 @@ class SendMessage extends Component {
     }
 
     componentDidUpdate(preprops, prestate){
-        console.log('------------------0')
-        console.log(this.state.input_value)
+        // console.log('------------------0')
+        // console.log(this.state.input_value)
 
         // let height = this.state.real_height
         // let change = (this.state.scrollHeight*(this.state.number-1))
@@ -108,10 +115,16 @@ class SendMessage extends Component {
     }
 
     eventhandler(e){
-        console.log('key')
-        console.log(e.target.value.split(''))
+        // console.log('key')
+        // console.log(e.target.value.split(''))
         if(this.state.scrollHeight==null){
             this.setState({scrollHeight: e.target.scrollHeight})
+        }
+        if(this.state.droped){
+            this.setState({droped: false})
+            console.log('droped handler')
+            
+            // return
         }
         if(e.target.value === '\n'){
             this.setState({input_value: ''})
@@ -155,7 +168,7 @@ class SendMessage extends Component {
             // console.log(height)
             
             let box_height = this.state.real_box_height
-            console.log(box_height)
+            // console.log(box_height)
             if(e.target.value !== '\n'){
                 box_height = Number(box_height) + (scrollHeight-(line_height))
             }
@@ -166,7 +179,7 @@ class SendMessage extends Component {
                 top = Number(top) - (scrollHeight-(line_height))
             }
             top = String(top) + 'px'
-            console.log(top, box_height, height)
+            // console.log(top, box_height, height)
             this.setState({top: top, height: height, box_height: box_height})
         }
 
@@ -260,75 +273,129 @@ class SendMessage extends Component {
     }
     
     send_message(){
+        // console.log(this.state.cookies)
+        // console.log(this.state.opposite_user)
         if(this.state.input_value !== ''){
-            console.log('0000000000000000000000')
+            this.sendMessage({'sender': this.state.cookies.user_id, 
+                              'receiver': this.state.opposite_user.id,
+                              'message': this.state.input_value})
             this.setState({input_value: '',
                         top: this.state.real_top,
                         height: this.state.real_height,
                         box_height: this.state.real_box_height})
-            console.log(this.state.input_value)
-            // this.setState({input_value: '', 
-            //                 top: this.state.real_top, 
-            //                 height: this.state.real_height, 
-            //                 box_height: this.state.real_box_height})
-            const headers = {
-                Authorization: `Token ${this.state.cookies.token}`
-                }
-            const data = {
-                    sender: this.state.cookies.user_id,
-                    receiver: this.state.opposite_user.id,
-                    message: this.state.input_value
-                }
-            const configs = {
-                headers: headers,
-    
-                }
-            axios.post('http://localhost:8000/chat/', data, configs)
-            .then((res)=>{
-                console.log(res)
-                // this.componentDidMount()
-                this.refresh_chat()
-            })
-            .catch(e=>{
-                console.log(e)
-            })
         }
+        // if(this.state.input_value !== ''){
+        //     console.log('0000000000000000000000')
+        //     this.setState({input_value: '',
+        //                 top: this.state.real_top,
+        //                 height: this.state.real_height,
+        //                 box_height: this.state.real_box_height})
+        //     console.log(this.state.input_value)
+        //     // this.setState({input_value: '', 
+        //     //                 top: this.state.real_top, 
+        //     //                 height: this.state.real_height, 
+        //     //                 box_height: this.state.real_box_height})
+        //     const headers = {
+        //         Authorization: `Token ${this.state.cookies.token}`
+        //         }
+        //     const data = {
+        //             sender: this.state.cookies.user_id,
+        //             receiver: this.state.opposite_user.id,
+        //             message: this.state.input_value
+        //         }
+        //     const configs = {
+        //         headers: headers,
+    
+        //         }
+        //     axios.post('http://localhost:8000/chat1/', data, configs)
+        //     .then((res)=>{
+        //         console.log(res)
+        //         // this.componentDidMount()
+        //         this.refresh_chat()
+        //     })
+        //     .catch(e=>{
+        //         console.log(e)
+        //     })
+        // }
+    }
+
+    dragenterhandler(e){
+        console.log('-------Drag Endted--------')
+        if(this.state.border === '1px solid gray'){
+            this.setState({border: '2px solid orange'})
+        }else{
+            this.setState({border: '1px solid gray'})
+        }
+
+    }
+
+    draghandler(e){
+        console.log('---------Drag-------------')
+        this.setState({border: '1px solid gray', droped: true})
+        console.log(e.dataTransfer.getData('text'))
+        console.log(e.dataTransfer.files)
+        for(var i of e.dataTransfer.types){
+            console.log(i, e.dataTransfer.getData(i))
+        }
+        // console.log(JSON.stringify(e.dataTransfer.files[0]))
+        console.log(typeof(e.dataTransfer.files[0]))
+        var formData = new FormData();
+        formData.append('file', e.dataTransfer.files[0])
+        axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+        formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        .then(res=>{
+            console.log(res)
+        }).catch(e=>{
+            console.log(e)
+        });
+        // axios.get('https://teams.microsoft.com/5194816b-984f-4160-b1e5-b3a7e6a8463a')
+        // axios.get('https://app.asana.com/app/asana/-/get_asset?asset_id=1203300440239883',
+        // {headers: {"Access-Control-Allow-Origin": "*"}})
+        // // axios.get('https://chat.google.com/u/0/api/get_attachment_url?url_type=FIFE_URL&content_type=image%2Fjpeg&attachment_token=AOkZXXS6REJ71RmdMA0mVuVHhc2sscamnVUZ8egIMLmMu1e%2FuOWAPaRH7485m7u1A5HRo%2BPKcJ526rVMh7kXfptVRvb2nZ16Wb8KIB%2FGmZZ6XRr6z4je7PoN%2F4gevFJalnRJKq8OlBl0Lel9Of7km3CukCJD89X4iPq96asAITQtp3GGlNT5jLeM8bS8n8BlDIHj0R8NkqS9XV3Zk%2FWAqt%2Bxd4%2Bx5Y72ssCf1wmbvjLo6jQ4ZMa8Mt48cbVPHj69iGc%2FpzYWHfzrZ3Bak25j9X%2B6P6pU6%2FuJcDUjN5fXINgxO%2FAZv15lYStzdLl9ZT%2FmhdKQflaYjs6zcchDIn1DOdovHlYB6F1Rf2flUzMg6y9DIbO1%2FvGguASmYnQlP6xA7CCUy%2BT%2Fyh28Xcn18jxchwzIWOJbn%2Bbq082Zb7HNAcYfiPp1R8g23HAzenMI5qGvGilrAWMj%2FvQRGf%2FU0DLyaQ4hz3O%2FhDPrf1IF0UQFTdFEYWOsNG2BNlZUmAEm&sz=w512')
+        // .then(res=>{
+        //     console.log('---------res---------')
+        //     console.log(res)
+        // }).catch(e=>{
+        //     console.log(e)
+        // });
     }
 
     render() { 
         let style = this.state.top!=null?{'top': this.state.top, 'height': this.state.box_height}:{}
-        let style2 = this.state.height!=null?{'height': this.state.height}:{}
-        console.log(style)
-        console.log(style2)
+        let style2 = this.state.height!=null?{'height': this.state.height, 'border': this.state.border}:{}
+        // console.log(style)
+        // console.log(style2)
         return (
             <div style={style} ref={this.refer} id="send-msg-comp" className="send-msg-bar">
-            <div className="sender-input">
-                {/* <EditableElement /> */}
-                <textarea placeholder="Type message" style={style2} ref={this.input_ref} name="" onKeyDown={this.keyhandler} onChange={this.eventhandler} id="msg-input" cols="30" rows="10" value={this.state.input_value}></textarea>
-                {/* <div jsname="yrriRe" jsaction="touchend:ufphYd; input:q3884e; paste:QD1hyc; drop:HZC9qb;" role="textbox" aria-label="Message Shahil Joshi. History is on." aria-multiline="true" spellcheck="true" g_editable="true" contenteditable="true" aria-owns="VQsG6b490" dir="ltr" onKeyDown={this.handler} onInput={this.eventhandler} id="msg-input" contenteditable="true"><div id="p1">darshan</div></div> */}
-                <div className="sender-button">
-                    <img onClick={this.send_message} src={send_button}  alt="Send" />
-                    {/* <button type="submit">Send</button> */}
+                    <div >
+                    </div>
+                <div onInput={this.handler} className="sender-input">
+                    {/* <EditableElement /> */}
+                        <textarea style={style2} id="msg-input" placeholder="Type message" onDragEnter={this.dragenterhandler} onDragLeave={this.dragenterhandler} onDrop={this.draghandler} ref={this.input_ref} name="" onKeyDown={this.keyhandler} onChange={this.eventhandler} cols="30" rows="10" value={this.state.input_value}></textarea>
+                    {/* <div jsname="yrriRe" jsaction="touchend:ufphYd; input:q3884e; paste:QD1hyc; drop:HZC9qb;" role="textbox" aria-label="Message Shahil Joshi. History is on." aria-multiline="true" spellcheck="true" g_editable="true" contenteditable="true" aria-owns="VQsG6b490" dir="ltr" onKeyDown={this.handler} onInput={this.eventhandler} id="msg-input" contenteditable="true"><div id="p1">darshan</div></div> */}
+                    <div className="sender-button">
+                        <img onClick={this.send_message} src={send_button}  alt="Send" />
+                        {/* <button type="submit">Send</button> */}
+                    </div>
+                </div>
+                <div className="extra-sender">
+                    <div className="extra-buttons">
+                        <img src={add_logo} alt="Attachment" />
+                    </div>
+                    <div className="extra-buttons">
+                        <img src={up_arrow_logo} alt="Attachment" />
+                    </div>
+                    <div className="extra-buttons">
+                        <img src={add_friend_logo} alt="Attachment" />
+                    </div>
+                    <div className="extra-buttons">
+                        <img src={file_logo} alt="Attachment" />
+                    </div>
+                    <div className="extra-buttons">
+                        <img src={attachment_logo} alt="Attachment" />
+                    </div>
                 </div>
             </div>
-            <div className="extra-sender">
-                <div className="extra-buttons">
-                    <img src={add_logo} alt="Attachment" />
-                </div>
-                <div className="extra-buttons">
-                    <img src={up_arrow_logo} alt="Attachment" />
-                </div>
-                <div className="extra-buttons">
-                    <img src={add_friend_logo} alt="Attachment" />
-                </div>
-                <div className="extra-buttons">
-                    <img src={file_logo} alt="Attachment" />
-                </div>
-                <div className="extra-buttons">
-                    <img src={attachment_logo} alt="Attachment" />
-                </div>
-            </div>
-        </div>
         );
     }
 }

@@ -15,6 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.static import static
+from django.conf import settings
 from chats.apis import FriendListAPI, MessageViewset, RequestAcceptReject, SearchFriendsResult, UserDetail
 from user.apis import RegistrationAPIView, SinginAPIView
 
@@ -22,10 +24,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup', RegistrationAPIView.as_view(), name='signup'),
     path('signin', SinginAPIView.as_view(), name='signin'),
-    path('chat/', include('chats.urls')),
+    path('chat1/', include('chats.urls')),
     path('search-friends', SearchFriendsResult.as_view(), name='search-friends'),
     path('user-detail', UserDetail.as_view(), name='user-detail'),
     path('request-accept-reject', RequestAcceptReject.as_view(), name='request-accept'),
     path('friends', FriendListAPI.as_view(), name='friends'),
+
+
+    path('chat/', include('chat.urls')),
 ]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

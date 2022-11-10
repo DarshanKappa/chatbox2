@@ -11,6 +11,7 @@ import SignIn from '../../chatbox-fe/src/components/SignIn'
 import Conversation from '../../chatbox-fe/src/components/Conversation';
 import Search from '../../chatbox-fe/src/components/Search';
 import { useCookies } from 'react-cookie';
+import WebSocket from './components/WebSocket';
 
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/chat/:user_id/:user_name" element={<Conversation/>} />
           <Route path="blogs" element={<h2>Blogs</h2>} />
           <Route path="contact" element={<h2>Contact</h2>} />
+          <Route path="ws" element={<WebSocket/>} />
           <Route path="*" element={<h2>page not found</h2>} />
       </Routes>
     </BrowserRouter>

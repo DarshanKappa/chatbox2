@@ -19,6 +19,7 @@ class FriendsModel(models.Model):
 class MessageModel(models.Model):
     
     message = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='chat_images/', null=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, blank=True)
     

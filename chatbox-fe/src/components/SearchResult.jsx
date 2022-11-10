@@ -143,7 +143,7 @@ function SearchResult({data}) {
                     user_id: data.id,
                     action: action
                 }
-            axios.post('http://localhost:8000/request-accept-reject', request_data, configs)
+            axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/request-accept-reject`, request_data, configs)
             .then(res=>{
                 console.log(res.data)
                 is_clickable = true

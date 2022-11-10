@@ -2,6 +2,8 @@ import { useCookies } from "react-cookie";
 
 
 function Message({key, message}) {
+    console.log('****************************')
+    console.log(key, message)
     const [cookies, setCookies] = useCookies()
     const user_id = cookies.user_id
     const side = (message.sender.id == user_id)?"right":"left"

@@ -24,7 +24,7 @@ class Search extends Component {
 
     componentDidUpdate(preprops, prestates){
         if(this.state.search_value !== "" & prestates.search_value !== this.state.search_value){
-            axios.get("http://localhost:8000/search-friends",
+            axios.get(`http://${process.env.REACT_APP_PUBLIC_URL}/search-friends`,
                     {headers:{Authorization: `Token ${this.state.cookies.token}`}, params:{value: this.state.search_value}})
             .then((res)=>{
                 console.log(res.data)

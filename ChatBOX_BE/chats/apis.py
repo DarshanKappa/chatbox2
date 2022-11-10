@@ -36,7 +36,9 @@ class ConversationChat(ListAPIView):
         #     queryset = last_conver_friend.conversation.all().order_by('message__created')
         # else:
         opposite_user = data.get('opposite_user')
-        opposite_user = User.objects.get(pk=opposite_user)
+        opposite_user = User.objects.filter(pk=opposite_user).first()
+        if not opposite_user:
+            return []
         
         queryset = UserMessageModel.objects.filter(Q(Q(sender=auth_user) & Q(receiver=opposite_user))
                                                     | Q(Q(sender=opposite_user) & Q(receiver=auth_user))).order_by('message__created')
@@ -160,3 +162,11 @@ class RequestAcceptReject(APIView):
         return Response({""})
     
     
+class UploadFile(APIView):
+    
+    def post(self, req, *args, **kwargs):
+        print(req.data)
+        print(req.FILES)
+        msg = MessageModel(file=req.FILES.get('file'))
+        msg.save()
+        return Response({"file uploaded"})

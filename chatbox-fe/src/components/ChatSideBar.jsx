@@ -16,7 +16,7 @@ class ChatSideBar extends Component {
     }
 
     componentDidMount(){
-        axios.get('http://localhost:8000/friends', {headers: {Authorization: `Token ${this.state.cookies.token}`}})
+        axios.get(`http://${process.env.REACT_APP_PUBLIC_URL}/friends`, {headers: {Authorization: `Token ${this.state.cookies.token}`}})
         .then(res=>{
             console.log(res.data)
             this.setState({friend_list: res.data})

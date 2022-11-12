@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FriendsModel, MessageModel, UserMessageModel
+from .models import FriendsModel, MessageModel, UserMessageModel, UploadedFiles
 
 # Register your models here.
 
@@ -7,3 +7,4 @@ from .models import FriendsModel, MessageModel, UserMessageModel
 admin.site.register(MessageModel)
 admin.site.register(UserMessageModel)
 admin.site.register(FriendsModel)
+admin.site.register(UploadedFiles)

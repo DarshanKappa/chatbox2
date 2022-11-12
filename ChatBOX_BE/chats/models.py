@@ -16,10 +16,16 @@ class FriendsModel(models.Model):
     requested_to = models.ForeignKey(User, related_name='friends_to', null=True, on_delete=CASCADE)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     
-class MessageModel(models.Model):
+class UploadedFiles(models.Model):
     
+    file = models.FileField(upload_to='uploaded_files/', null=True)
+    type = models.CharField(max_length=50, null=True, blank=True)
+    filename = models.CharField(max_length=200, null=True, blank=True)
+
+class MessageModel(models.Model):
+
     message = models.TextField(blank=True, null=True)
-    file = models.FileField(upload_to='chat_images/', null=True)
+    file_url = models.CharField(max_length=1000, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated = models.DateTimeField(auto_now=True, null=True, blank=True)
     

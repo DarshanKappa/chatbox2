@@ -28,13 +28,22 @@ class ChatConsumer(JsonWebsocketConsumer):
         )
 
     # Receive message from WebSocket
-    def receive(self, text_data):
-        print(type(text_data))
-        print(text_data)
+    def receive(self, text_data, bytes_data=None):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
+        # url = ''
+        # try:
+        #     m = eval(message.get('message'))
+        #     url = m['url']
+        #     message = message.get('message')
+        # except Exception as e:
+        #     print(e)
+            # pass
         
-        msg = MessageModel(message=message.get('message'))
+        # print(url)
+        # if not url:
+        print('------------------------------------')
+        msg = MessageModel(message=message.get('message'), file_url=message.get('url'))
         msg.save()
         
         sender = User.objects.get(pk=message.get('sender'))
@@ -44,12 +53,12 @@ class ChatConsumer(JsonWebsocketConsumer):
 
         user_msg = UserMessageModel(sender=sender, receiver=receiver, message=msg, friends=friends)
         user_msg.save()
-        
         serialize = ConversationChatSerializer(user_msg)
         message = serialize.data
-        print(message)
         print('----------save------------')
         print(msg.id)
+            
+        print(message)
 
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(

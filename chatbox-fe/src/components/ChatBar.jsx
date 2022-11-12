@@ -19,6 +19,12 @@ const ChatBar = (props) => {
     const [opposite_user, setopposite_user] = useState({ id: user_id, name: user_name });
     const [chat_list, setchat_list] = useState([]);
 
+    const [drag_style1, setDragStyle1] = useState({});
+    const [drag_style2, setDragStyle2] = useState({});
+
+    const [file_p, setFile_p] = useState(null)
+    const [url_p, setURL_p] = useState('')
+
     let ids = [auth_user.id, opposite_user.id]
 
     const [channel_layer, setChannelLayer] = useState(ids.sort().join('-'));
@@ -68,11 +74,15 @@ const ChatBar = (props) => {
             // // console.log(lastJsonMessage)
             // console.log(chat_list[chat_list.length - 1], lastJsonMessage.message)
             // console.log(typeof (chat_list[chat_list.length - 1]), typeof (lastJsonMessage.message))
-
+            // var list = chat_list
+            // list.push(lastJsonMessage.message)
+            // setchat_list(list)
+            // setchat_list([...chat_list, lastJsonMessage.message])
+            // setTimeout(()=>{
+            //     setchat_list([])
+            // }, 3000)
             setchat_list((previous_state) => (
-
                 [...previous_state, lastJsonMessage.message]
-
             ))
         }
     }, [lastJsonMessage])
@@ -80,10 +90,60 @@ const ChatBar = (props) => {
     const refresh_chat = () => {
 
     }
-    // // console.log(cookies)
-    // // console.log(opposite_user)
+
+    const dragenter = ()=>{
+        // setDragStyle1({'display': 'flex'})
+        // setDragStyle2({'opacity': '30%'})
+    }
+    
+    const dragleave = (e)=>{
+        setDragStyle1({})
+        setDragStyle2({})
+        
+    }
+    
+    const dragover = (e)=>{
+        setDragStyle1({'display': 'flex'})
+        setDragStyle2({'opacity': '30%'})
+        // setDragStyle1({})
+        // setDragStyle2({})
+        e.stopPropagation();
+        e.preventDefault();
+    }
+    
+    const droped = (e)=>{
+        window.document.getElementById('msg-input').focus()
+        e.stopPropagation();
+        e.preventDefault();
+        setDragStyle1({})
+        setDragStyle2({})
+        // this.setState({border: '1px solid gray', droped: true})
+        // console.log(e.dataTransfer.getData('text'))
+        // console.log(e.dataTransfer.files)
+        for(var i of e.dataTransfer.types){
+            console.log(i, e.dataTransfer.getData(i))
+        }
+        // console.log(JSON.stringify(e.dataTransfer.files[0]))
+        // console.log(typeof(e.dataTransfer.files[0]))
+        var file = e.dataTransfer.files[0]
+        console.log(file)
+        // console.log(file.type)
+        var url = window.URL.createObjectURL(file)
+        // console.log(url)
+        setFile_p(file)
+        setURL_p(url)
+        // this.setState({file: file, file_url: url})
+        var formData = new FormData();
+        formData.append('file', e.dataTransfer.files[0])
+    }
+
     return (
-        <div className="chat-bar">
+    <>  
+        <div style={drag_style1} className="drop-page">
+            <div>Drop</div>
+        </div>
+        <div style={drag_style2} className="chat-bar" onDragEnter={dragenter} onDragLeave={dragleave} 
+                onDragOver={dragover} onDrop={droped} >
             <header className="chats-header">
                 <div>
                     {opposite_user.name}
@@ -92,8 +152,9 @@ const ChatBar = (props) => {
 
             <ShowChatsBar chat_list={chat_list} />
 
-            <SendMessage sendMessage={sendMessage} refresh_chat={refresh_chat} opposite_user={opposite_user} cookies={cookies} />
+            <SendMessage key={file_p} file={[file_p, setFile_p]} url={[url_p, setURL_p]} sendMessage={sendMessage} refresh_chat={refresh_chat} opposite_user={opposite_user} cookies={cookies} />
         </div>
+    </>
     );
 }
 

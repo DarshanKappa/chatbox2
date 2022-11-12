@@ -1,7 +1,7 @@
 from datetime import datetime
 from urllib import request
 from rest_framework.generics import ListAPIView, ListCreateAPIView
-from .models import FriendsModel, UserMessageModel, MessageModel
+from .models import FriendsModel, UserMessageModel, MessageModel, UploadedFiles
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework.authentication import TokenAuthentication
@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from .serializers import ChatsSerializer, ConversationChatSerializer, FriendsSerializer, SearchFriendsResultsSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+import json
 
 
 class MessageViewset(ListCreateAPIView):
@@ -165,8 +166,14 @@ class RequestAcceptReject(APIView):
 class UploadFile(APIView):
     
     def post(self, req, *args, **kwargs):
-        print(req.data)
-        print(req.FILES)
-        msg = MessageModel(file=req.FILES.get('file'))
-        msg.save()
-        return Response({"file uploaded"})
+        if req.FILES.get('file'):
+            file = req.FILES.get('file')
+            upload_file = UploadedFiles(file=file, filename=file._name, type=file.content_type)
+            upload_file.save()
+            print('0000000000000000000000000000')
+            print(file.__dict__)
+            print(req.data)
+            url = f"http://{req.META.get('HTTP_HOST')}{upload_file.file.url}"
+            return Response(data={'url': url})
+        else:
+            return Response({}, status=400)

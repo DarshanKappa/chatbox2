@@ -59,7 +59,8 @@ class ConversationChatSerializer(serializers.ModelSerializer):
             'created': {
                 'date':obj.message.created.strftime("%d %h,%Y"),
                 'time': obj.message.created.strftime("%w:%M %p")
-                }
+                },
+            'url': obj.message.file_url
         }
         return msg
     

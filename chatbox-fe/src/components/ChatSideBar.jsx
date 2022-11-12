@@ -49,10 +49,10 @@ export default ChatSideBar;
 
 function Friend(props){
     const navigate = useNavigate()
-    console.log(props)
+    // console.log(props)
     const clickHandler = ()=>{
         props.setOppositeUser({id: props.friend.friend.id, name: props.friend.friend.username})
-        console.log('---------clicked---------', props.friend)
+        // console.log('---------clicked---------', props.friend)
         navigate(`/chat/${props.friend.friend.id}/${props.friend.friend.username}`)
     }
     return (

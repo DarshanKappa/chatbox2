@@ -14,7 +14,11 @@ class SendMessage extends Component {
         this.state = {
             opposite_user: props.opposite_user,
             cookies: props.cookies,
+
             input_value: '',
+            file: props.file[0],
+            file_url: props.url[0],
+
             top: null,
             real_top: null, 
             height: null,
@@ -35,12 +39,17 @@ class SendMessage extends Component {
         this.componentDidMount = this.componentDidMount.bind(this)
 
         this.dragenterhandler = this.dragenterhandler.bind(this)
+        this.dragoverhandler = this.dragoverhandler.bind(this)
         this.draghandler = this.draghandler.bind(this)
 
         this.sendMessage = this.props.sendMessage.bind(this)
+        this.setFILE = this.props.file[1].bind(this)
+        this.setURL = this.props.url[1].bind(this)
     }
 
+
     componentDidMount(){
+        window.document.getElementById('msg-input').focus()
         let top = window.getComputedStyle(this.refer.current).top
         let box_height = window.getComputedStyle(this.refer.current).height
         let height = window.getComputedStyle(this.input_ref.current).height
@@ -56,7 +65,7 @@ class SendMessage extends Component {
         // padding_bottom = Number(padding_bottom.substring(0, padding_bottom.length-2))
         let input_height = line_height
         input_height = String(input_height) + 'px'
-        this.setState({input_value: '', real_top: top, real_height: height, real_box_height: box_height, height: input_height})
+        this.setState({input_value: '', real_top: top, top: top, real_height: height, real_box_height: box_height, box_height: box_height, height: input_height})
         // console.log('++++++++++++++++++++++++++++++++')
         // let x = window.document.getElementById('msg-input')
         // console.log(x.style.fonts)
@@ -273,17 +282,78 @@ class SendMessage extends Component {
     }
     
     send_message(){
-        // console.log(this.state.cookies)
-        // console.log(this.state.opposite_user)
-        if(this.state.input_value !== ''){
-            this.sendMessage({'sender': this.state.cookies.user_id, 
-                              'receiver': this.state.opposite_user.id,
-                              'message': this.state.input_value})
-            this.setState({input_value: '',
+        let entered_value = this.state.input_value
+        if(this.state.input_value !== '' & this.state.file===null){
+                this.sendMessage({'sender': this.state.cookies.user_id, 
+                                  'receiver': this.state.opposite_user.id,
+                                  'message': entered_value})
+        }else{
+            if(this.state.file!==null){
+                var formData = new FormData();
+                console.log(this.state.file)
+                formData.append('file', this.state.file)
+                // var data1 = []
+                // var filereader = new FileReader()
+                // filereader.onload = (e)=>{
+                //     var result = e.target.result;
+                //     console.log(result)
+                //     const view = new Int8Array(result);
+                //     console.log(view)
+                //     console.log(typeof(result))
+                    // const data = [];
+                  
+                    // int8Array.map(a=>{data.push(a); data1.push(a)})
+                    // // each(int8Array, (item) => {
+                    // //   data.push(item);
+                    // //   data1.push(item)
+                    // // });
+                    // console.log(data)
+                    // console.log(int8Array)
+                    // var blob = new Blob([view], { type: this.state.file.type })
+                    // console.log(blob)
+                    // var url = URL.createObjectURL(blob)
+                    // console.log(url)
+                    // console.log(this.state.file.type)
+                    
+                    // this.sendMessage({'sender': this.state.cookies.user_id, 
+                    //                     'receiver': this.state.opposite_user.id,
+                    //                     'message': 'This is a file.',
+                    //                     'file': {'bytes': view, type: this.state.file.type}})
+                    // this.setState({file: null})
+    
+
+                // }
+                // filereader.readAsArrayBuffer(this.state.file);
+
+                // this.sendMessage({'sender': this.state.cookies.user_id, 
+                //                     'receiver': this.state.opposite_user.id,
+                //                     'message': this.state.file})
+
+                axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+                formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                .then(res=>{
+                    console.log(res)
+                    console.log(this.state.input_value)
+                    this.sendMessage({'sender': this.state.cookies.user_id, 
+                                      'receiver': this.state.opposite_user.id,
+                                      'message': entered_value,
+                                      'url': res.data.url})
+                }).catch(e=>{
+                    console.log(e)
+                });
+
+            }
+            
+        }
+        
+        this.setState({input_value: '',
+                        file: null,
+                        file_url: '',
                         top: this.state.real_top,
                         height: this.state.real_height,
                         box_height: this.state.real_box_height})
-        }
+        this.setFILE(null)
+        this.setURL('')
         // if(this.state.input_value !== ''){
         //     console.log('0000000000000000000000')
         //     this.setState({input_value: '',
@@ -329,25 +399,37 @@ class SendMessage extends Component {
 
     }
 
+    dragoverhandler(e){
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
     draghandler(e){
         console.log('---------Drag-------------')
-        this.setState({border: '1px solid gray', droped: true})
-        console.log(e.dataTransfer.getData('text'))
-        console.log(e.dataTransfer.files)
-        for(var i of e.dataTransfer.types){
-            console.log(i, e.dataTransfer.getData(i))
-        }
+        // e.stopPropagation();
+        // e.preventDefault();
+        // this.setState({border: '1px solid gray', droped: true})
+        // console.log(e.dataTransfer.getData('text'))
+        // console.log(e.dataTransfer.files)
+        // for(var i of e.dataTransfer.types){
+        //     console.log(i, e.dataTransfer.getData(i))
+        // }
         // console.log(JSON.stringify(e.dataTransfer.files[0]))
-        console.log(typeof(e.dataTransfer.files[0]))
-        var formData = new FormData();
-        formData.append('file', e.dataTransfer.files[0])
-        axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
-        formData, {headers: {'Content-Type': 'multipart/form-data'}})
-        .then(res=>{
-            console.log(res)
-        }).catch(e=>{
-            console.log(e)
-        });
+        // console.log(typeof(e.dataTransfer.files[0]))
+        // var file = e.dataTransfer.files[0]
+        // console.log(file.type)
+        // var url = window.URL.createObjectURL(file)
+        // console.log(url)
+        // this.setState({file: file, file_url: url})
+        // var formData = new FormData();
+        // formData.append('file', e.dataTransfer.files[0])
+        // axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+        // formData, {headers: {'Content-Type': 'multipart/form-data'}})
+        // .then(res=>{
+        //     console.log(res)
+        // }).catch(e=>{
+        //     console.log(e)
+        // });
         // axios.get('https://teams.microsoft.com/5194816b-984f-4160-b1e5-b3a7e6a8463a')
         // axios.get('https://app.asana.com/app/asana/-/get_asset?asset_id=1203300440239883',
         // {headers: {"Access-Control-Allow-Origin": "*"}})
@@ -360,18 +442,43 @@ class SendMessage extends Component {
         // });
     }
 
-    render() { 
-        let style = this.state.top!=null?{'top': this.state.top, 'height': this.state.box_height}:{}
-        let style2 = this.state.height!=null?{'height': this.state.height, 'border': this.state.border}:{}
-        // console.log(style)
-        // console.log(style2)
+    render() {
+        // (this.state.url)
+        let style4 = {'display': 'none'}
+        if(this.state.file_url!==''){
+            var top = this.state.top!==null?Number(this.state.top.substring(0, this.state.top.length-2)) - 200:null
+            top = String(top) + 'px'
+
+            var box_height = this.state.box_height!==null?Number(this.state.box_height.substring(0, this.state.box_height.length-2)) + 200:null
+            box_height = String(box_height) + 'px'
+
+            var height = this.state.height?Number(this.state.height.substring(0, this.state.height.length-2)) + 212:null
+            height = String(height) + 'px'
+
+            style4 = {'height': '200px', 'width': '100%'}
+        }else{
+            var top = this.state.top
+            var box_height = this.state.box_height
+            var height = this.state.height?Number(this.state.height.substring(0, this.state.height.length-2)) + 12:null
+            height = String(height) + 'px'
+        }
+
+        let style = top!==null?{'top': top, 'height': box_height}:{}
+        let style2 = this.state.height!==null?{'height': this.state.height,}:{}
+        let style3 = height!==null?{'height': height, 'border': this.state.border}:{}
+
         return (
             <div style={style} ref={this.refer} id="send-msg-comp" className="send-msg-bar">
                     <div >
                     </div>
                 <div onInput={this.handler} className="sender-input">
                     {/* <EditableElement /> */}
-                        <textarea style={style2} id="msg-input" placeholder="Type message" onDragEnter={this.dragenterhandler} onDragLeave={this.dragenterhandler} onDrop={this.draghandler} ref={this.input_ref} name="" onKeyDown={this.keyhandler} onChange={this.eventhandler} cols="30" rows="10" value={this.state.input_value}></textarea>
+                    <div className="parent-input" style={style3}>
+                        <div style={style4} className="temp">
+                            <img className="droped-img" src={this.state.file_url} alt="" />
+                        </div>
+                        <textarea autofocus style={style2} id="msg-input" placeholder="Type message" onDragEnter={this.dragenterhandler} onDragLeave={this.dragenterhandler} onDragOver={this.dragoverhandler} onDrop={this.draghandler} ref={this.input_ref} name="" onKeyDown={this.keyhandler} onChange={this.eventhandler} cols="30" rows="10" value={this.state.input_value}></textarea>
+                    </div>
                     {/* <div jsname="yrriRe" jsaction="touchend:ufphYd; input:q3884e; paste:QD1hyc; drop:HZC9qb;" role="textbox" aria-label="Message Shahil Joshi. History is on." aria-multiline="true" spellcheck="true" g_editable="true" contenteditable="true" aria-owns="VQsG6b490" dir="ltr" onKeyDown={this.handler} onInput={this.eventhandler} id="msg-input" contenteditable="true"><div id="p1">darshan</div></div> */}
                     <div className="sender-button">
                         <img onClick={this.send_message} src={send_button}  alt="Send" />

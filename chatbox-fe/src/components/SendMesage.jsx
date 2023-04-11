@@ -284,7 +284,7 @@ class SendMessage extends Component {
     send_message(){
         let entered_value = this.state.input_value
         if(this.state.input_value !== '' & this.state.file===null){
-                this.sendMessage({'sender': this.state.cookies.user_id, 
+            this.sendMessage({'sender': this.state.cookies.user_id, 
                                   'receiver': this.state.opposite_user.id,
                                   'message': entered_value})
         }else{
@@ -293,20 +293,37 @@ class SendMessage extends Component {
                 console.log(this.state.file)
                 formData.append('file', this.state.file)
                 // var data1 = []
-                // var filereader = new FileReader()
-                // filereader.onload = (e)=>{
-                //     var result = e.target.result;
-                //     console.log(result)
-                //     const view = new Int8Array(result);
-                //     console.log(view)
-                //     console.log(typeof(result))
+                var filereader = new FileReader()
+                console.log(filereader)
+                filereader.onload = (e)=>{
+                    console.log(e.currentTarget.result)
+                    var result = e.currentTarget.result;
+                    const view = new Int8Array(result);
+                    console.log()
+                    
+                    axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+                    {'file12': view}, {headers: {}})
+                    .then(res=>{
+                        console.log(res)
+                        console.log(this.state.input_value)
+                        // this.sendMessage({'sender': this.state.cookies.user_id, 
+                        //                   'receiver': this.state.opposite_user.id,
+                        //                   'message': entered_value,
+                        //                   'url': res.data.url})
+                    }).catch(e=>{
+                        console.log(e)
+                    });
+                    // console.log(result)
+                    console.log(view)
+                    // console.log(view)
+                    // console.log(typeof(result))
                     // const data = [];
                   
                     // int8Array.map(a=>{data.push(a); data1.push(a)})
-                    // // each(int8Array, (item) => {
-                    // //   data.push(item);
-                    // //   data1.push(item)
-                    // // });
+                    // each(int8Array, (item) => {
+                    //   data.push(item);
+                    //   data1.push(item)
+                    // });
                     // console.log(data)
                     // console.log(int8Array)
                     // var blob = new Blob([view], { type: this.state.file.type })
@@ -322,25 +339,31 @@ class SendMessage extends Component {
                     // this.setState({file: null})
     
 
-                // }
-                // filereader.readAsArrayBuffer(this.state.file);
-
-                // this.sendMessage({'sender': this.state.cookies.user_id, 
-                //                     'receiver': this.state.opposite_user.id,
-                //                     'message': this.state.file})
-
-                axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+                }
+                filereader.readAsArrayBuffer(this.state.file);axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
                 formData, {headers: {'Content-Type': 'multipart/form-data'}})
                 .then(res=>{
                     console.log(res)
                     console.log(this.state.input_value)
-                    this.sendMessage({'sender': this.state.cookies.user_id, 
-                                      'receiver': this.state.opposite_user.id,
-                                      'message': entered_value,
-                                      'url': res.data.url})
+                    // this.sendMessage({'sender': this.state.cookies.user_id, 
+                    //                   'receiver': this.state.opposite_user.id,
+                    //                   'message': entered_value,
+                    //                   'url': res.data.url})
                 }).catch(e=>{
                     console.log(e)
                 });
+                // axios.post(`http://${process.env.REACT_APP_PUBLIC_URL}/chat1/upload-file`,
+                // formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                // .then(res=>{
+                //     console.log(res)
+                //     console.log(this.state.input_value)
+                //     // this.sendMessage({'sender': this.state.cookies.user_id, 
+                //     //                   'receiver': this.state.opposite_user.id,
+                //     //                   'message': entered_value,
+                //     //                   'url': res.data.url})
+                // }).catch(e=>{
+                //     console.log(e)
+                // });
 
             }
             

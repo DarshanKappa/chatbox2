@@ -127,9 +127,10 @@ const ChatBar = (props) => {
         // console.log(typeof(e.dataTransfer.files[0]))
         var file = e.dataTransfer.files[0]
         console.log(file)
+        console.log(typeof(file))
         // console.log(file.type)
         var url = window.URL.createObjectURL(file)
-        // console.log(url)
+        console.log(url)
         setFile_p(file)
         setURL_p(url)
         // this.setState({file: file, file_url: url})

@@ -1,0 +1,29 @@
+
+.button {
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.primary {
+    background-color: rgb(94, 94, 233);
+}
+
+.secondary {
+    background-color: rgb(178, 125, 228);
+}
+
+.success {
+    background-color: seagreen;
+}
+
+.error {
+    background-color: tomato;
+}

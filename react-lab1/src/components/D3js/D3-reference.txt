@@ -1,0 +1,16 @@
+-> d3.selection()
+-> d3.select(selector)
+-> d3.selectAll(selector)
+-> selection.selectAll(selector)
+-> selection.filter(filter)
+-> selection.merge(other)
+-> d3.matcher(selector)
+-> d3.creator(name)
+-> selection.each(function)
+-> selection.call(function[, arguments…])
+-> d3.local()
+-> local.set(node, value)
+-> local.get(node)
+-> local.remove(node)
+
+
